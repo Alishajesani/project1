@@ -1213,3 +1213,84 @@ button, input, textarea, select{ font: inherit; }
     grid-template-columns: 1fr !important;
   }
 }
+/* ===========================
+   MOBILE SIDEBAR FIX
+   =========================== */
+
+/* Real clickable overlay */
+.pa-overlay{
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.38);
+  z-index: 65;
+}
+
+/* Phone layout */
+@media (max-width: 768px){
+
+  .pa-shell{
+    grid-template-columns: 1fr !important;
+  }
+
+  .pa-sidebar{
+    position: fixed;
+    z-index: 70;
+    left: 0;
+    top: 0;
+    height: 100vh;
+    width: min(86vw, 340px);
+    max-width: min(86vw, 340px);
+    transform: translateX(0);
+    opacity: 1;
+  }
+
+  .pa-sidebar.closed{
+    transform: translateX(-110%);
+    opacity: 0;
+  }
+
+  /* Remove old pseudo overlay */
+  .pa-sidebar:not(.closed) ~ .pa-main::before{
+    content: none !important;
+  }
+}
+/* ===========================
+   MOBILE SIDEBAR (ChatGPT style)
+   Add at BOTTOM of App.css
+   =========================== */
+
+   .pa-overlay{
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,.38);
+    z-index: 65;
+  }
+  
+  /* Phone drawer sidebar */
+  @media (max-width: 768px){
+    .pa-shell{
+      grid-template-columns: 1fr !important;
+    }
+  
+    .pa-sidebar{
+      position: fixed;
+      z-index: 70;
+      left: 0;
+      top: 0;
+      height: 100vh;
+      width: min(86vw, 340px);
+      max-width: min(86vw, 340px);
+      transform: translateX(0);
+      opacity: 1;
+    }
+  
+    .pa-sidebar.closed{
+      transform: translateX(-110%);
+      opacity: 0;
+    }
+  
+    /* ❌ Remove old pseudo overlay (not clickable) */
+    .pa-sidebar:not(.closed) ~ .pa-main::before{
+      content: none !important;
+    }
+  }

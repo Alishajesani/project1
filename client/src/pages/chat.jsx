@@ -44,7 +44,7 @@ function initialsFromUser(user) {
 }
 
 export default function Chat() {
-  // Firebase Auth user (no AuthProvider needed)
+  // ✅ Firebase Auth user (no AuthProvider)
   const [user, setUser] = useState(null);
   const uid = user?.uid || null;
 
@@ -57,18 +57,29 @@ export default function Chat() {
   const [isPlus, setIsPlus] = useState(() => localStorage.getItem("pa_plus") === "true");
   const [theme, setTheme] = useState(() => localStorage.getItem("pa_theme") || "light");
 
+  // ✅ detect phone (used for ChatGPT-style sidebar behavior)
+  const isPhone =
+    typeof window !== "undefined"
+      ? window.matchMedia("(max-width: 768px)").matches
+      : false;
+
   // --- layout state ---
-  const [sidebarOpen, setSidebarOpen] = useState(true);
+  // ✅ phone starts closed, ipad/mac starts open
+  const [sidebarOpen, setSidebarOpen] = useState(() => !isPhone);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [search, setSearch] = useState("");
 
+  const closeSidebar = () => {
+    if (isPhone) setSidebarOpen(false);
+  };
+
   // --- threads (Firestore) ---
-  const [threads, setThreads] = useState([]);
+  const [threads, setThreads] = useState([]); // [{id,title,createdAt,updatedAt}]
   const [activeThreadId, setActiveThreadId] = useState(null);
 
   // --- messages (Firestore) ---
-  const [messages, setMessages] = useState([]);
+  const [messages, setMessages] = useState([]); // [{id, role, content, createdAt}]
 
   // --- composer + tools ---
   const [input, setInput] = useState("");
@@ -104,7 +115,6 @@ export default function Chat() {
     if (!uid) {
       setThreads([]);
       setActiveThreadId(null);
-      setMessages([]);
       return;
     }
 
@@ -171,6 +181,7 @@ export default function Chat() {
     });
 
     setActiveThreadId(chatRef.id);
+    closeSidebar(); // ✅ on phone, close after starting
   };
 
   const renameChatIfNeeded = async (chatId, firstUserText) => {
@@ -219,7 +230,7 @@ export default function Chat() {
     try {
       const chatId = await ensureActiveChat(text);
 
-      // 1) save user msg to Firestore
+      // save user msg
       await addDoc(collection(db, "users", uid, "chats", chatId, "messages"), {
         role: "user",
         content: text,
@@ -232,30 +243,24 @@ export default function Chat() {
 
       await renameChatIfNeeded(chatId, text);
 
-      // 2) build request messages (role/content only)
-      const nextMessages = [
-        ...messages.map((m) => ({ role: m.role, content: m.content })),
-        { role: "user", content: text },
-      ];
+      // token for server verify
+      const token = await auth.currentUser?.getIdToken?.();
 
-      // 3) token for server verify (auth ON)
-      const token = await user.getIdToken();
-
-      // 4) call backend
+      // call backend (IMPORTANT: server must allow CORS)
       const res = await axios.post(
         API_URL,
-        { messages: nextMessages, mode, language },
+        { messages: [...messages, { role: "user", content: text }], mode, language },
         {
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
+            ...(token ? { Authorization: `Bearer ${token}` } : {}),
           },
         }
       );
 
       const reply = res?.data?.reply ?? "(No reply returned)";
 
-      // 5) save assistant msg
+      // save assistant msg
       await addDoc(collection(db, "users", uid, "chats", chatId, "messages"), {
         role: "assistant",
         content: reply,
@@ -267,16 +272,17 @@ export default function Chat() {
       });
     } catch (err) {
       console.error("Chat request failed:", err);
+
       const msg =
         err?.response?.data?.error ||
         err?.message ||
-        "Request failed (server/CORS/auth)";
+        "Request failed (likely CORS or server down)";
 
       try {
         const chatId = await ensureActiveChat(text);
         await addDoc(collection(db, "users", uid, "chats", chatId, "messages"), {
           role: "assistant",
-          content: `⚠️ ${msg}`,
+          content: `⚠️ ${msg}. If this is CORS, fix server CORS for your Vite origin.`,
           createdAt: serverTimestamp(),
         });
         await updateDoc(doc(db, "users", uid, "chats", chatId), {
@@ -330,7 +336,7 @@ export default function Chat() {
 
     await addDoc(collection(db, "users", uid, "chats", chatId, "messages"), {
       role: "assistant",
-      content: "Got it! (Upload parsing comes next.)",
+      content: "Got it! (Upload parsing comes next.) For now, I can confirm the file was selected.",
       createdAt: serverTimestamp(),
     });
 
@@ -342,6 +348,7 @@ export default function Chat() {
       setSettingsOpen(true);
       return;
     }
+
     const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (!SR) return;
 
@@ -369,25 +376,21 @@ export default function Chat() {
       const t = e.results?.[0]?.[0]?.transcript || "";
       setInput((prev) => (prev ? prev + " " + t : t));
     };
+
     rec.start();
   };
-
-  // If not logged in, show simple screen (your router can also protect this page)
-  if (!user) {
-    return (
-      <div style={{ padding: 24, fontFamily: "system-ui" }}>
-        <h2>PolyAgent</h2>
-        <p>You are not logged in.</p>
-        <p>Go to your Login page and sign in, then come back here.</p>
-      </div>
-    );
-  }
 
   const avatar = initialsFromUser(user);
   const profileName = user?.displayName || user?.email || "User";
 
   return (
-    <div className={`pa-shell ${theme === "dark" ? "theme-dark" : "theme-light"}`}>
+    <div
+      className={`pa-shell ${theme === "dark" ? "theme-dark" : "theme-light"}`}
+      style={{
+        // ✅ watermark image path that works on GitHub Pages too
+        "--watermark-url": `url(${import.meta.env.BASE_URL}polyagent-watermark.png)`,
+      }}
+    >
       <div className={`pa-sidebar ${sidebarOpen ? "open" : "closed"}`}>
         <div className="pa-sideTop">
           <button className="pa-newChat" onClick={startNewChat}>
@@ -410,7 +413,10 @@ export default function Chat() {
             <button
               key={t.id}
               className={`pa-thread ${t.id === activeThreadId ? "active" : ""}`}
-              onClick={() => setActiveThreadId(t.id)}
+              onClick={() => {
+                setActiveThreadId(t.id);
+                closeSidebar(); // ✅ phone: close after selecting
+              }}
             >
               <div className="pa-threadTitle">{t.title || "New chat"}</div>
               <div className="pa-threadMeta">{formatDate(t.createdAt)}</div>
@@ -450,6 +456,15 @@ export default function Chat() {
         </div>
       </div>
 
+      {/* ✅ CLICK OUTSIDE TO CLOSE (phone only) */}
+      {isPhone && sidebarOpen && (
+        <div
+          className="pa-overlay"
+          onMouseDown={closeSidebar}
+          onTouchStart={closeSidebar}
+        />
+      )}
+
       <div className="pa-main">
         <div className="pa-topbar">
           <button className="pa-topIcon" onClick={() => setSidebarOpen((v) => !v)}>
@@ -457,10 +472,7 @@ export default function Chat() {
           </button>
           <div className="pa-topTitle">PolyAgent</div>
           <div className="pa-topRight">
-            <button
-              className="pa-topBtn"
-              onClick={() => setTheme((t) => (t === "dark" ? "light" : "dark"))}
-            >
+            <button className="pa-topBtn" onClick={() => setTheme((t) => (t === "dark" ? "light" : "dark"))}>
               {theme === "dark" ? "☀️" : "🌙"}
             </button>
             <button className="pa-topBtn" onClick={() => setSettingsOpen(true)}>
