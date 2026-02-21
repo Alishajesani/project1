@@ -1080,3 +1080,136 @@ button, input, textarea, select{ font: inherit; }
     opacity: 0.05;
     filter: blur(0.4px);
   }
+  /* =========================
+   MOBILE + iPAD RESPONSIVE FIXES
+   Add this at the BOTTOM of App.css
+   ========================= */
+
+/* iPad / medium screens */
+@media (max-width: 1024px){
+  .pa-chatInner,
+  .pa-composer{
+    width: min(980px, calc(100% - 24px));
+  }
+
+  .pa-bubble{
+    max-width: 78%;
+  }
+}
+
+/* Phone + small tablets */
+@media (max-width: 768px){
+  /* Remove tight spacing */
+  .pa-chatScroll{
+    padding: 16px 0 12px;
+  }
+
+  .pa-chatInner{
+    width: calc(100% - 24px);
+    gap: 14px;
+  }
+
+  /* Bubbles should take more width on mobile */
+  .pa-bubble{
+    max-width: 92%;
+    padding: 12px 12px;
+  }
+
+  .pa-bubbleText{
+    font-size: 14px;
+    line-height: 1.55;
+  }
+
+  /* Topbar spacing */
+  .pa-topbar{
+    grid-template-columns: 48px 1fr auto;
+    height: 54px;
+  }
+  .pa-topIcon{
+    width: 38px;
+    height: 38px;
+    margin-left: 8px;
+  }
+  .pa-topTitle{
+    font-size: 15px;
+  }
+
+  /* Composer becomes more mobile-friendly */
+  .pa-composerWrap{
+    padding: 10px 0 14px;
+  }
+
+  .pa-composer{
+    width: calc(100% - 24px);
+    padding: 10px;
+    border-radius: 16px;
+  }
+
+  /* Allow the grid to breathe on smaller screens */
+  .pa-composerRow{
+    grid-template-columns: 44px 1fr 44px;
+    gap: 8px;
+  }
+
+  /* Make textarea taller by default */
+  .pa-textarea{
+    min-height: 46px;
+    max-height: 160px;
+  }
+
+  /* Hide mic button if things get cramped (optional) */
+  .pa-micBtn{
+    display: none;
+  }
+
+  /* Watermark smaller on phones */
+  .pa-chatScroll::before{
+    background-size: min(360px, 78vw);
+    opacity: 0.045;
+  }
+}
+
+/* Very small phones */
+@media (max-width: 420px){
+  .pa-chatInner,
+  .pa-composer{
+    width: calc(100% - 18px);
+  }
+
+  .pa-bubble{
+    max-width: 96%;
+  }
+
+  .pa-topBtn{
+    padding: 0 10px;
+    height: 38px;
+  }
+}
+
+/* Auth page improvements on small screens */
+@media (max-width: 480px){
+  .auth-page{
+    padding: 18px;
+  }
+  .auth-card{
+    max-width: 100%;
+    padding: 18px;
+    border-radius: 16px;
+  }
+}
+
+/* =========================
+   IMPORTANT iOS SAFARI NOTE
+   :has() can be unreliable on some iOS versions.
+   If sidebar close spacing looks wrong on iPhone/iPad,
+   do this instead: toggle a class on .pa-shell in React
+   like "sidebar-closed" and use this:
+   ========================= */
+
+@media (max-width: 900px){
+  /* On mobile you're already using overlay sidebar,
+     so the grid doesn't need :has() behavior. */
+  .pa-shell{
+    grid-template-columns: 1fr !important;
+  }
+}
