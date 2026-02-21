@@ -1294,3 +1294,291 @@ button, input, textarea, select{ font: inherit; }
       content: none !important;
     }
   }
+
+  /* ===========================
+   Dark theme contrast upgrade (ChatGPT-like)
+   Paste at bottom of App.css
+   =========================== */
+
+/* make text + surfaces clearer */
+.theme-dark{
+  --bg: #0b1220;
+  --panel: rgba(255,255,255,.06);
+  --panel2: rgba(255,255,255,.04);
+  --text: rgba(255,255,255,.92);
+  --muted: rgba(255,255,255,.62);
+  --border: rgba(255,255,255,.10);
+  --shadow: 0 18px 60px rgba(0,0,0,.65);
+  --chip: rgba(255,255,255,.08);
+  --chipActive: rgba(255,255,255,.14);
+  --accent: #36d399;
+}
+
+/* sidebar + topbar better separation */
+.theme-dark .pa-sidebar{
+  background: linear-gradient(to bottom, rgba(255,255,255,.06), rgba(255,255,255,.03));
+  border-right: 1px solid rgba(255,255,255,.10);
+}
+
+.theme-dark .pa-topbar{
+  background: linear-gradient(to bottom, rgba(255,255,255,.06), rgba(255,255,255,.03));
+  border-bottom: 1px solid rgba(255,255,255,.10);
+}
+
+/* inputs readable */
+.theme-dark .pa-search,
+.theme-dark .pa-textarea,
+.theme-dark .pa-select{
+  color: rgba(255,255,255,.92);
+}
+
+.theme-dark .pa-search::placeholder,
+.theme-dark .pa-textarea::placeholder{
+  color: rgba(255,255,255,.48);
+}
+
+/* bubbles readable */
+.theme-dark .pa-bubble{
+  border-color: rgba(255,255,255,.10);
+}
+
+.theme-dark .pa-bubbleRole{
+  color: rgba(255,255,255,.62);
+}
+
+.theme-dark .pa-bubbleText{
+  color: rgba(255,255,255,.90);
+}
+
+/* chips readable */
+.theme-dark .pa-chip{
+  border-color: rgba(255,255,255,.10);
+}
+
+/* ===========================
+   Search icon inside input
+   =========================== */
+.pa-searchWrap{
+  position: relative;
+}
+
+.pa-searchIcon{
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--muted);
+  pointer-events: none;
+  display: grid;
+  place-items: center;
+}
+
+.pa-search{
+  padding-left: 40px; /* space for the icon */
+}
+
+/* ===========================
+   Icon rail when sidebar is closed (desktop/iPad)
+   =========================== */
+.pa-rail{
+  position: fixed;
+  left: 10px;
+  top: 70px;
+  bottom: 16px;
+  width: 52px;
+  z-index: 80;
+
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.pa-railSpacer{ flex: 1; }
+
+.pa-railBtn{
+  height: 44px;
+  width: 44px;
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  background: var(--panel2);
+  color: var(--text);
+  cursor: pointer;
+  box-shadow: 0 10px 24px rgba(0,0,0,.18);
+}
+
+.theme-dark .pa-railBtn{
+  box-shadow: 0 14px 34px rgba(0,0,0,.55);
+}
+
+.pa-railBtn:hover{
+  filter: brightness(1.05);
+}
+/* ===========================
+   FIX: dark mode text is black on buttons/inputs (Safari/Chrome default)
+   Paste at VERY BOTTOM
+   =========================== */
+
+   button, input, textarea, select {
+    color: inherit;              /* ✅ important */
+    -webkit-text-fill-color: currentColor; /* ✅ fixes iOS/Safari weirdness */
+  }
+  
+  /* Make sure all app UI pieces explicitly use theme text */
+  .pa-sidebar,
+  .pa-topbar,
+  .pa-thread,
+  .pa-newChat,
+  .pa-profileBtn,
+  .pa-topBtn,
+  .pa-topIcon,
+  .pa-chip,
+  .pa-select,
+  .pa-search,
+  .pa-textarea,
+  .pa-bubble,
+  .pa-bubbleRole,
+  .pa-bubbleText {
+    color: var(--text);
+  }
+  
+  /* Placeholders in dark mode */
+  .theme-dark .pa-search::placeholder,
+  .theme-dark .pa-textarea::placeholder {
+    color: rgba(255,255,255,.48);
+  }
+  /* Make SVG icons align nicely inside buttons */
+.pa-topIcon svg,
+.pa-topBtn svg,
+.pa-iconBtn svg,
+.pa-micBtn svg,
+.pa-sendBtn svg {
+  display: block;
+}
+
+.pa-topIcon,
+.pa-topBtn,
+.pa-iconBtn,
+.pa-micBtn,
+.pa-sendBtn {
+  display: grid;
+  place-items: center;
+}
+/* ===========================
+   FLAT ICON BUTTONS (no boxed borders)
+   Applies to: hamburger, theme, settings, +, mic, send
+   =========================== */
+
+   .pa-topIcon,
+   .pa-topBtn,
+   .pa-iconBtn,
+   .pa-micBtn,
+   .pa-sendBtn{
+     border: 0 !important;
+     background: transparent !important;
+     box-shadow: none !important;
+     border-radius: 12px;          /* keep soft hover shape */
+     height: 40px;
+     width: 40px;
+     display: grid;
+     place-items: center;
+     color: var(--text);
+   }
+   
+   /* remove old hover shadows */
+   .pa-topIcon:hover,
+   .pa-topBtn:hover,
+   .pa-iconBtn:hover,
+   .pa-micBtn:hover,
+   .pa-sendBtn:hover{
+     box-shadow: none !important;
+     filter: none !important;
+   }
+   
+   /* subtle ChatGPT-like hover */
+   .pa-topIcon:hover,
+   .pa-topBtn:hover,
+   .pa-iconBtn:hover,
+   .pa-micBtn:hover,
+   .pa-sendBtn:hover{
+     background: rgba(0,0,0,.05) !important;
+   }
+   
+   .theme-dark .pa-topIcon:hover,
+   .theme-dark .pa-topBtn:hover,
+   .theme-dark .pa-iconBtn:hover,
+   .theme-dark .pa-micBtn:hover,
+   .theme-dark .pa-sendBtn:hover{
+     background: rgba(255,255,255,.08) !important;
+   }
+   
+   /* pressed */
+   .pa-topIcon:active,
+   .pa-topBtn:active,
+   .pa-iconBtn:active,
+   .pa-micBtn:active,
+   .pa-sendBtn:active{
+     transform: translateY(1px);
+   }
+   
+   /* keep disabled looking correct */
+   .pa-sendBtn:disabled{
+     opacity: .45;
+     background: transparent !important;
+   }
+   
+   /* make icons align perfectly */
+   .pa-topIcon svg,
+   .pa-topBtn svg,
+   .pa-iconBtn svg,
+   .pa-micBtn svg,
+   .pa-sendBtn svg{
+     display: block;
+   }
+   /* ===========================
+   COMPLETELY FLAT ICONS
+   No hover background
+   No active background
+   No tap highlight
+   =========================== */
+
+.pa-topIcon,
+.pa-topBtn,
+.pa-iconBtn,
+.pa-micBtn,
+.pa-sendBtn {
+  border: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  outline: none !important;
+  -webkit-tap-highlight-color: transparent !important;
+}
+
+/* remove hover effect */
+.pa-topIcon:hover,
+.pa-topBtn:hover,
+.pa-iconBtn:hover,
+.pa-micBtn:hover,
+.pa-sendBtn:hover {
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+/* remove active/click effect */
+.pa-topIcon:active,
+.pa-topBtn:active,
+.pa-iconBtn:active,
+.pa-micBtn:active,
+.pa-sendBtn:active {
+  background: transparent !important;
+  box-shadow: none !important;
+  transform: none !important;
+}
+
+/* remove focus ring */
+.pa-topIcon:focus,
+.pa-topBtn:focus,
+.pa-iconBtn:focus,
+.pa-micBtn:focus,
+.pa-sendBtn:focus {
+  outline: none !important;
+}

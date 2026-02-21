@@ -90,7 +90,7 @@ export default function Chat() {
   const [attachOpen, setAttachOpen] = useState(false);
   const fileInputRef = useRef(null);
   const photoInputRef = useRef(null);
-
+  const searchInputRef = useRef(null);
   const [isListening, setIsListening] = useState(false);
   const speechRef = useRef(null);
 
@@ -394,12 +394,29 @@ export default function Chat() {
       <div className={`pa-sidebar ${sidebarOpen ? "open" : "closed"}`}>
         <div className="pa-sideTop">
           <button className="pa-newChat" onClick={startNewChat}>
-            <div className="pa-icon">✏️</div>
+          <div className="pa-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="18" height="18">
+              <path
+                fill="currentColor"
+                d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zm2.92 2.83H5v-.92l8.06-8.06.92.92L5.92 20.08zM20.71 7.04a1.003 1.003 0 0 0 0-1.42L18.37 3.29a1.003 1.003 0 0 0-1.42 0l-1.83 1.83 3.75 3.75 1.84-1.83z"
+              />
+            </svg>
+          </div>
             <span>New chat</span>
           </button>
 
           <div className="pa-searchWrap">
+            <span className="pa-searchIcon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="18" height="18">
+                <path
+                  fill="currentColor"
+                  d="M10 2a8 8 0 1 0 4.9 14.3l4.4 4.4 1.4-1.4-4.4-4.4A8 8 0 0 0 10 2zm0 2a6 6 0 1 1 0 12 6 6 0 0 1 0-12z"
+                />
+              </svg>
+            </span>
+
             <input
+              ref={searchInputRef}
               className="pa-search"
               placeholder="Search"
               value={search}
@@ -473,10 +490,20 @@ export default function Chat() {
           <div className="pa-topTitle">PolyAgent</div>
           <div className="pa-topRight">
             <button className="pa-topBtn" onClick={() => setTheme((t) => (t === "dark" ? "light" : "dark"))}>
-              {theme === "dark" ? "☀️" : "🌙"}
+            {theme === "dark" ? (
+              <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+                <path fill="currentColor" d="M6.76 4.84l-1.8-1.79-1.41 1.41 1.79 1.8 1.42-1.42zM1 11h3v2H1v-2zm10-10h2v3h-2V1zm9.66 3.46-1.41-1.41-1.8 1.79 1.42 1.42 1.79-1.8zM17 11h3v2h-3v-2zm-5 3a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm0 6h2v3h-2v-3zm7.24-1.84 1.8 1.79 1.41-1.41-1.79-1.8-1.42 1.42zM4.34 19.54l1.41 1.41 1.8-1.79-1.42-1.42-1.79 1.8z"/>
+              </svg>
+            ) : (
+              <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+                <path fill="currentColor" d="M21.64 13a9 9 0 0 1-10.63-10.63A8 8 0 1 0 21.64 13z"/>
+              </svg>
+            )}
             </button>
             <button className="pa-topBtn" onClick={() => setSettingsOpen(true)}>
-              Settings
+            <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+              <path fill="currentColor" d="M19.14 12.94c.04-.31.06-.63.06-.94s-.02-.63-.06-.94l2.03-1.58a.5.5 0 0 0 .12-.64l-1.92-3.32a.5.5 0 0 0-.6-.22l-2.39.96a7.4 7.4 0 0 0-1.63-.94l-.36-2.54a.5.5 0 0 0-.5-.42h-3.84a.5.5 0 0 0-.5.42l-.36 2.54c-.58.22-1.12.52-1.63.94l-2.39-.96a.5.5 0 0 0-.6.22L2.71 7.84a.5.5 0 0 0 .12.64l2.03 1.58c-.04.31-.06.63-.06.94s.02.63.06.94L2.83 14.52a.5.5 0 0 0-.12.64l1.92 3.32c.13.23.4.32.6.22l2.39-.96c.5.41 1.05.72 1.63.94l.36 2.54c.04.24.25.42.5.42h3.84c.25 0 .46-.18.5-.42l.36-2.54c.58-.22 1.12-.52 1.63-.94l2.39.96c.2.1.47.01.6-.22l1.92-3.32a.5.5 0 0 0-.12-.64l-2.03-1.58zM12 15.5A3.5 3.5 0 1 1 12 8a3.5 3.5 0 0 1 0 7.5z"/>
+            </svg>
             </button>
           </div>
         </div>
@@ -507,7 +534,9 @@ export default function Chat() {
             <div className="pa-composerRow" style={{ position: "relative" }}>
               <div className="pa-leftTools">
                 <button type="button" className="pa-iconBtn" onClick={() => setAttachOpen((v) => !v)}>
-                  ＋
+                <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+                  <path fill="currentColor" d="M11 5h2v14h-2V5zm-6 6h14v2H5v-2z"/>
+                </svg>
                 </button>
 
                 {attachOpen && (
@@ -553,7 +582,9 @@ export default function Chat() {
 
               <div className="pa-rightTools">
                 <button className={`pa-micBtn ${isListening ? "on" : ""}`} onClick={startVoice} type="button">
-                  🎙
+                <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+                  <path fill="currentColor" d="M12 14a3 3 0 0 0 3-3V6a3 3 0 0 0-6 0v5a3 3 0 0 0 3 3zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.92V21h2v-3.08A7 7 0 0 0 19 11h-2z"/>
+                </svg>
                 </button>
 
                 <button
@@ -561,7 +592,15 @@ export default function Chat() {
                   disabled={!input || isSending}
                   onClick={sendMessage}
                 >
-                  {isSending ? "…" : "↑"}
+                  {isSending ? (
+  <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+    <path fill="currentColor" d="M12 6a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zm0 5a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zm0 5a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3z"/>
+  </svg>
+) : (
+  <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+    <path fill="currentColor" d="M3 12l18-9-6.5 18-2.6-7.1L3 12zm9.3 2.3 1.6 4.4L17.6 8.6l-5.3 5.7z"/>
+  </svg>
+)}
                 </button>
               </div>
             </div>
