@@ -1062,3 +1062,21 @@ button, input, textarea, select{ font: inherit; }
       border-radius: 16px;
     }
   }
+  /* Put watermark on the main chat area */
+  .pa-chatScroll::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    pointer-events: none;
+  
+    /* ✅ use the variable we set in main.jsx */
+    background-image: var(--watermark-url);
+  
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: min(520px, 60vw);
+    opacity: 0.05;
+    filter: blur(0.4px);
+  }

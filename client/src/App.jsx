@@ -20,10 +20,10 @@ export default function App() {
     return () => unsub();
   }, []);
 
-  if (user === undefined) return null; // or a loader
+  if (user === undefined) return null;
 
   return (
-    <BrowserRouter>
+    <BrowserRouter basename={import.meta.env.BASE_URL}>
       <Routes>
         <Route path="/" element={<RequireAuth user={user}><Chat /></RequireAuth>} />
         <Route path="/login" element={user ? <Navigate to="/" replace /> : <Login />} />
