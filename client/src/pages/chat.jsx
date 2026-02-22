@@ -233,13 +233,12 @@ export default function Chat() {
     setInput("");
     setIsSending(true);
 
-    if (!API_URL) {
-      throw new Error(
-        "API base URL is not set. Set VITE_API_BASE (e.g. http://localhost:5001 for local, or your deployed backend URL for GitHub Pages)."
-      );
-    }
-
     try {
+      if (!API_URL) {
+        throw new Error(
+          "API base URL is not set. Set VITE_API_BASE (e.g. http://localhost:5001 for local, or your deployed backend URL for GitHub Pages)."
+        );
+      }
       const chatId = await ensureActiveChat(text);
 
       // save user msg
