@@ -17,7 +17,13 @@ import {
   getDoc,
 } from "firebase/firestore";
 
-const API_URL = "http://localhost:5001/api/chat";
+const API_BASE_RAW = import.meta.env.VITE_API_BASE;
+const API_BASE_FALLBACK = import.meta.env.DEV ? "http://localhost:5001" : "";
+const API_BASE = (API_BASE_RAW || API_BASE_FALLBACK).replace(/\/$/, "");
+
+// VITE_API_BASE should be like: http://localhost:5001  OR  https://your-backend.com
+// (do NOT include "/api" at the end)
+const API_URL = API_BASE ? `${API_BASE}/api/chat` : "";
 
 function formatDate(d) {
   try {
@@ -227,6 +233,12 @@ export default function Chat() {
     setInput("");
     setIsSending(true);
 
+    if (!API_URL) {
+      throw new Error(
+        "API base URL is not set. Set VITE_API_BASE (e.g. http://localhost:5001 for local, or your deployed backend URL for GitHub Pages)."
+      );
+    }
+
     try {
       const chatId = await ensureActiveChat(text);
 
@@ -272,17 +284,28 @@ export default function Chat() {
       });
     } catch (err) {
       console.error("Chat request failed:", err);
+      const status = err?.response?.status;
+      const url = err?.config?.url;
 
       const msg =
         err?.response?.data?.error ||
         err?.message ||
-        "Request failed (likely CORS or server down)";
+        "Request failed (likely CORS, wrong URL, or server down)";
+
+      const extra =
+        status === 404
+          ? ` (404 Not Found)\nCheck your API URL: ${url || API_URL}.\nYour VITE_API_BASE must NOT end with /api.`
+          : status
+          ? ` (HTTP ${status})`
+          : url
+          ? `\nURL: ${url}`
+          : "";
 
       try {
         const chatId = await ensureActiveChat(text);
         await addDoc(collection(db, "users", uid, "chats", chatId, "messages"), {
           role: "assistant",
-          content: `⚠️ ${msg}. If this is CORS, fix server CORS for your Vite origin.`,
+          content: `⚠️ ${msg}${extra}\n\nIf you’re on GitHub Pages, your backend must be deployed and use https.\nIf you’re local, make sure the backend is running on http://localhost:5001 and that /api/chat exists.`,
           createdAt: serverTimestamp(),
         });
         await updateDoc(doc(db, "users", uid, "chats", chatId), {
