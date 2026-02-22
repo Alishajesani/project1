@@ -3,7 +3,7 @@ const cors = require("cors");
 require("dotenv").config();
 
 const app = express();
-const port = 5001;
+const port = process.env.PORT || 5001;
 
 app.use(express.json());
 
@@ -13,6 +13,7 @@ const ALLOWED_ORIGINS = new Set([
   "http://localhost:5175",
   "http://127.0.0.1:5173",
   "http://127.0.0.1:5175",
+  "https://alishajesani.github.io",
 ]);
 
 const corsOptions = {
