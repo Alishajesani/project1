@@ -35,9 +35,6 @@ app.use(cors(corsOptions));
 const healthRoute = require("./routes/health");
 app.use("/api/health", healthRoute);
 
-const aiRoute = require("./routes/ai");
-app.use("/api", aiRoute);
-
 const chatRoute = require("./routes/chat");
 app.use("/api/chat", chatRoute);
 
@@ -45,7 +42,7 @@ app.get("/", (req, res) => {
   res.send("AI Agent Backend is running 🤖🚀");
 });
 
-console.log("✅ Routes loaded: /api/health, /api (ai), /api/chat (firebase protected)");
+console.log("✅ Routes loaded: /api/health, /api/chat (Firebase protected)");
 
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);

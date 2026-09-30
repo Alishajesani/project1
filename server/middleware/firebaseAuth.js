@@ -1,9 +1,29 @@
 const admin = require("firebase-admin");
-const serviceAccount = require("../serviceAccountKey.json");
+const fs = require("fs");
+const path = require("path");
+
+function getFirebaseCredential() {
+  if (process.env.FIREBASE_SERVICE_ACCOUNT) {
+    const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
+
+    if (serviceAccount.private_key) {
+      serviceAccount.private_key = serviceAccount.private_key.replace(/\\n/g, "\n");
+    }
+
+    return admin.credential.cert(serviceAccount);
+  }
+
+  const localKeyPath = path.join(__dirname, "..", "serviceAccountKey.json");
+  if (fs.existsSync(localKeyPath)) {
+    return admin.credential.cert(require(localKeyPath));
+  }
+
+  return admin.credential.applicationDefault();
+}
 
 if (!admin.apps.length) {
   admin.initializeApp({
-    credential: admin.credential.cert(serviceAccount),
+    credential: getFirebaseCredential(),
   });
 }
 

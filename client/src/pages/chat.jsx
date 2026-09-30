@@ -202,7 +202,9 @@ export default function Chat() {
         title: makeTitleFromFirstUserMessage(firstUserText),
         updatedAt: serverTimestamp(),
       });
-    } catch {}
+    } catch (error) {
+      console.warn("Unable to rename chat", error);
+    }
   };
 
   const ensureActiveChat = async (firstUserText) => {
@@ -310,7 +312,9 @@ export default function Chat() {
         await updateDoc(doc(db, "users", uid, "chats", chatId), {
           updatedAt: serverTimestamp(),
         });
-      } catch {}
+      } catch (saveError) {
+        console.warn("Unable to save the chat error message", saveError);
+      }
     } finally {
       setIsSending(false);
     }
