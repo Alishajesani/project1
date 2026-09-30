@@ -38,6 +38,10 @@ The Express server must be deployed separately to a Node.js host. Configure thes
 
 Use `npm start` as the server start command and `/api/health` as the health-check path.
 
+### Render
+
+This repository includes a `render.yaml` Blueprint for the backend. In Render, create a Blueprint from this repository and provide `OPENAI_API_KEY` and `FIREBASE_SERVICE_ACCOUNT` when prompted. After deployment, set the GitHub Actions secret `VITE_API_BASE` to the Render service URL and rerun the Pages workflow.
+
 ## Verify before pushing
 
 ```bash
